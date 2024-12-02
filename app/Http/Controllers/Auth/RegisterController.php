@@ -23,10 +23,24 @@ class RegisterController extends Controller
     public function daftarAplikasi(Request $request)
     {
         $request->validate([
+            'name'                  => 'required|string|max:255',
             'username'              => 'required|string|max:255',
             'email'                 => 'required|string|email|max:255|unique:users',
             'password'              => 'required|string|min:8|confirmed',
-            'password_confirmation' => 'required',
+            'password_confirmation' => 'required|string|same:password|min:8',
+        ],
+        [
+            'name.required' => 'Bidang nama lengkap wajib diisi.',
+            'username.required' => 'Bidang nama pengguna wajib diisi.',
+            'email.required' => 'Bidang email wajib diisi.',
+            'email.email' => 'Format email tidak valid.',
+            'email.unique' => 'Email yang anda masukkan telah terpakai.',
+            'password.required' => 'Bidang kata sandi wajib diisi.',
+            'password.min' => 'Kata sandi harus minimal 8 karakter.',
+            'password.confirmed' => 'Kata sandi dan konfirmasi kata sandi tidak sesuai.',
+            'password_confirmation.required' => 'Bidang konfirmasi kata sandi wajib diisi.',
+            'password_confirmation.min' => 'Konfirmasi kata sandi harus minimal 8 karakter.',
+            'password_confirmation.same' => 'Kata sandi dan konfirmasi kata sandi tidak sesuai.',
         ]);
 
         try {
@@ -34,16 +48,18 @@ class RegisterController extends Controller
             $todayDate = $dt->toDayDateTimeString();
             
             User::create([
-                'username'          => $request->username,
-                'name'              => $request->username,
+                'name'              => $request->name,
                 'email'             => $request->email,
-                'avatar'            => $request->image,
+                'username'          => $request->username,
+                'employee_id'       => null,
                 'join_date'         => $todayDate,
+                'status'            => 'Inactive',
                 'role_name'         => 'User',
-                'status'            => 'Active',
+                'avatar'            => $request->image,
+                'tgl_lahir'         => null,
+                'password'          => Hash::make($request->password),
                 'tema_aplikasi'     => 'Terang',
                 'status_online'     => 'Offline',
-                'password'          => Hash::make($request->password)
             ]);
             
             DB::commit();

@@ -18,7 +18,7 @@
                     {{-- message --}}
                     {!! Toastr::message() !!}
 
-                    <form method="POST" action="{{ route('change/password/db') }}">
+                    <form id="changePasswordForm" method="POST" action="{{ route('change/password/db') }}">
                         @csrf
                         <div class="form-group">
                             <div class="info-status1">
@@ -153,8 +153,19 @@
     <!-- /Page Wrapper -->
     @push('js')
         <script>
+            document.addEventListener('keydown', function (event) {
+                if (event.ctrlKey && (event.key === 's' || event.key === 'S')) {
+                    event.preventDefault();
+                    event.stopPropagation();
+
+                    const form = document.getElementById('changePasswordForm');
+                    if (form) {
+                        form.submit();
+                    }
+                }
+            });
+            document.getElementById('pageTitle').innerHTML = 'Change Password | Loghub - PT TATI ';
             $(document).ready(function() {
-                $('#pageTitle').html('Change Password | Loghub - PT TATI');
                 const togglePassword = function(passwordInput, icon) {
                     if (passwordInput && icon) {
                         if (passwordInput.type === 'password') {
@@ -195,84 +206,6 @@
         </script>
         <script>
             $(document).ready(function() {
-                // Indicator Kata Sandi 1 //
-                const passwordInput1 = document.getElementById('passwordInput1');
-                const IndicatorKekuatan1 = document.getElementById('indicator-kata-sandi-1');
-                var IndicatorLemahBefore1 = document.querySelector(".kata-sandi-lemah-before-1");
-                var IndicatorSedangBefore1 = document.querySelector(".kata-sandi-sedang-before-1");
-                var IndicatorLemahAfter1 = document.querySelector(".kata-sandi-lemah-after-1");
-                var IndicatorSedangAfter1 = document.querySelector(".kata-sandi-sedang-after-1");
-                const IndicatorTulisan1 = document.getElementById('indicator-kata-sandi-tulisan-1');
-
-                passwordInput1.addEventListener('input', function() {
-                    const password1 = passwordInput1.value.trim();
-                    if (password1 === '') {
-                        IndicatorKekuatan1.style.display = 'none';
-                        IndicatorLemahBefore1.style.display = 'none';
-                        IndicatorSedangBefore1.style.display = 'none';
-                        IndicatorLemahAfter1.style.display = 'none';
-                        IndicatorSedangAfter1.style.display = 'none';
-                        IndicatorTulisan1.textContent = '';
-                    } else {
-                        const strength1 = kekuatanKataSandi1(password1);
-                        perbaharuiIndicatorKataSandi1(strength1);
-                    }
-                });
-
-                function kekuatanKataSandi1(password1) {
-                    if (/[a-z]/.test(password1)) {
-                        if (/\d+/.test(password1)) {
-                            if (/.[!,@,#,$,%,^,&,*,?,_,~,-,(,)]/.test(password1)) {
-                                return 'kuat';
-                            } else {
-                                return 'sedang';
-                            }
-                        } else {
-                            return 'lemah';
-                        }
-                    } else {
-                        return 'lemah';
-                    }
-                }
-
-                function perbaharuiIndicatorKataSandi1(strength1) {
-                    IndicatorKekuatan1.style.display = '';
-                    IndicatorKekuatan1.className = '';
-                    IndicatorLemahBefore1.style.display = 'block';
-                    IndicatorSedangBefore1.style.display = 'block';
-                    IndicatorLemahAfter1.style.display = 'block';
-                    IndicatorSedangAfter1.style.display = 'block';
-
-                    if (strength1 === 'lemah') {
-                        IndicatorKekuatan1.classList.add('kata-sandi-lemah');
-                        IndicatorLemahBefore1.classList.add('kata-sandi-lemah-before-1');
-                        IndicatorSedangBefore1.classList.add('kata-sandi-sedang-before-1');
-                        IndicatorLemahAfter1.classList.remove('kata-sandi-lemah-after-1');
-                        IndicatorSedangAfter1.classList.remove('kata-sandi-sedang-after-1');
-                        IndicatorTulisan1.textContent = 'Kata Sandi Lemah';
-                        IndicatorTulisan1.style.color = '#ff4757';
-
-                    } else if (strength1 === 'sedang') {
-                        IndicatorKekuatan1.classList.add('kata-sandi-sedang');
-                        IndicatorLemahAfter1.classList.add('kata-sandi-lemah-after-1');
-                        IndicatorSedangBefore1.classList.add('kata-sandi-sedang-before-1');
-                        IndicatorLemahBefore1.classList.remove('kata-sandi-lemah-before-1');
-                        IndicatorSedangAfter1.classList.remove('kata-sandi-sedang-after-1');
-                        IndicatorTulisan1.textContent = 'Kata Sandi Sedang';
-                        IndicatorTulisan1.style.color = 'orange';
-
-                    } else {
-                        IndicatorKekuatan1.classList.add('kata-sandi-kuat');
-                        IndicatorLemahAfter1.classList.add('kata-sandi-lemah-after-1');
-                        IndicatorSedangAfter1.classList.add('kata-sandi-sedang-after-1');
-                        IndicatorLemahBefore1.classList.remove('kata-sandi-lemah-before-1');
-                        IndicatorSedangBefore1.classList.remove('kata-sandi-sedang-before-1');
-                        IndicatorTulisan1.textContent = 'Kata Sandi Kuat';
-                        IndicatorTulisan1.style.color = '#23ad5c';
-                    }
-                }
-                // /Indicator Kata Sandi 1 //
-
                 // Indicator Kata Sandi 2 //
                 const passwordInput2 = document.getElementById('passwordInput2');
                 const IndicatorKekuatan2 = document.getElementById('indicator-kata-sandi-2');
@@ -350,6 +283,84 @@
                     }
                 }
                 // /Indicator Kata Sandi 2 //
+
+                // Indicator Kata Sandi 3 //
+                const passwordInput3 = document.getElementById('passwordInput3');
+                const IndicatorKekuatan3 = document.getElementById('indicator-kata-sandi-3');
+                var IndicatorLemahBefore3 = document.querySelector(".kata-sandi-lemah-before-3");
+                var IndicatorSedangBefore3 = document.querySelector(".kata-sandi-sedang-before-3");
+                var IndicatorLemahAfter3 = document.querySelector(".kata-sandi-lemah-after-3");
+                var IndicatorSedangAfter3 = document.querySelector(".kata-sandi-sedang-after-3");
+                const IndicatorTulisan3 = document.getElementById('indicator-kata-sandi-tulisan-3');
+
+                passwordInput3.addEventListener('input', function() {
+                    const password3 = passwordInput3.value.trim();
+                    if (password3 === '') {
+                        IndicatorKekuatan3.style.display = 'none';
+                        IndicatorLemahBefore3.style.display = 'none';
+                        IndicatorSedangBefore3.style.display = 'none';
+                        IndicatorLemahAfter3.style.display = 'none';
+                        IndicatorSedangAfter3.style.display = 'none';
+                        IndicatorTulisan3.textContent = '';
+                    } else {
+                        const strength3 = kekuatanKataSandi3(password3);
+                        perbaharuiIndicatorKataSandi3(strength3);
+                    }
+                });
+                
+                function kekuatanKataSandi3(password3) {
+                    if (/[a-z]/.test(password3)) {
+                        if (/\d+/.test(password3)) {
+                            if (/.[!,@,#,$,%,^,&,*,?,_,~,-,(,)]/.test(password3)) {
+                                return 'kuat';
+                            } else {
+                                return 'sedang';
+                            }
+                        } else {
+                            return 'lemah';
+                        }
+                    } else {
+                        return 'lemah';
+                    }
+                }
+
+                function perbaharuiIndicatorKataSandi3(strength3) {
+                    IndicatorKekuatan3.style.display = '';
+                    IndicatorKekuatan3.className = '';
+                    IndicatorLemahBefore3.style.display = 'block';
+                    IndicatorSedangBefore3.style.display = 'block';
+                    IndicatorLemahAfter3.style.display = 'block';
+                    IndicatorSedangAfter3.style.display = 'block';
+
+                    if (strength3 === 'lemah') {
+                        IndicatorKekuatan3.classList.add('kata-sandi-lemah');
+                        IndicatorLemahBefore3.classList.add('kata-sandi-lemah-before-3');
+                        IndicatorSedangBefore3.classList.add('kata-sandi-sedang-before-3');
+                        IndicatorLemahAfter3.classList.remove('kata-sandi-lemah-after-3');
+                        IndicatorSedangAfter3.classList.remove('kata-sandi-sedang-after-3');
+                        IndicatorTulisan3.textContent = 'Kata Sandi Lemah';
+                        IndicatorTulisan3.style.color = '#ff4757';
+
+                    } else if (strength3 === 'sedang') {
+                        IndicatorKekuatan3.classList.add('kata-sandi-sedang');
+                        IndicatorLemahAfter3.classList.add('kata-sandi-lemah-after-3');
+                        IndicatorSedangBefore3.classList.add('kata-sandi-sedang-before-3');
+                        IndicatorLemahBefore3.classList.remove('kata-sandi-lemah-before-3');
+                        IndicatorSedangAfter3.classList.remove('kata-sandi-sedang-after-3');
+                        IndicatorTulisan3.textContent = 'Kata Sandi Sedang';
+                        IndicatorTulisan3.style.color = 'orange';
+
+                    } else {
+                        IndicatorKekuatan3.classList.add('kata-sandi-kuat');
+                        IndicatorLemahAfter3.classList.add('kata-sandi-lemah-after-3');
+                        IndicatorSedangAfter3.classList.add('kata-sandi-sedang-after-3');
+                        IndicatorLemahBefore3.classList.remove('kata-sandi-lemah-before-3');
+                        IndicatorSedangBefore3.classList.remove('kata-sandi-sedang-before-3');
+                        IndicatorTulisan3.textContent = 'Kata Sandi Kuat';
+                        IndicatorTulisan3.style.color = '#23ad5c';
+                    }
+                }
+                // /Indicator Kata Sandi 3 //
             });
         </script>
     @endpush

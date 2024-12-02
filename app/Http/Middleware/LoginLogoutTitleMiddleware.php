@@ -16,13 +16,11 @@ class LoginLogoutTitleMiddleware
     public function handle(Request $request, Closure $next): Response
     {
         if($request->is('/')) {
-            view()->share('pageTitle', 'Login | Loghub - PT TATI ');
-        }
-        elseif($request->is('login')) {
-        view()->share('pageTitle', 'Login | Loghub - PT TATI ');
-        }
-        elseif ($request->is('logout')) {
-            view()->share('pageTitle2', 'Logout | Loghub - PT TATI ');
+            view()->share('pageTitle', 'Welcome to the Application | Loghub - PT TATI ');
+        } else if($request->is('login')) {
+            view()->share('pageTitle2', 'Login Application | Loghub - PT TATI ');
+        } else if($request->is('register')) {
+            view()->share('pageTitle3', 'Registration Application | Loghub - PT TATI ');
         }
 
         return $next($request);

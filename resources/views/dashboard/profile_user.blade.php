@@ -79,23 +79,23 @@
                                                     </div>
                                                 </li>
                                                 <br>
-                                                {{-- @can('admin')
+                                                @can('admin')
                                                     <a href='#' class='btn btn-outline-danger' data-toggle='modal'
                                                         data-target='#hapus_pengguna'><i class="fa fa-trash-o m-r-5"></i> Delete
                                                         Account</a>
-                                                @endcan --}}
-                                                {{-- <a href='{{ route('rubah-kata-sandi') }}' class='btn btn-outline-danger'><i
+                                                @endcan
+                                                <a href='{{ route('rubah-kata-sandi') }}' class='btn btn-outline-danger'><i
                                                         class="fa fa-lock m-r-5"></i>Rubah
-                                                    Sandi</a> --}}
+                                                    Sandi</a>
                                             </ul>
                                         </div>
                                     </div>
                                 </div>
-                                {{-- <div class="pro-edit">
+                                <div class="pro-edit">
                                     <a data-target="#data_pengguna" data-toggle="modal" class="edit-icon" href="#">
                                         <i class="fa fa-pencil"></i>
                                     </a>
-                                </div> --}}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -105,7 +105,7 @@
         <!-- /Page Content -->
 
         <!-- Update Data Pengguna Modal -->
-        {{-- <div id="data_pengguna" class="modal custom-modal fade" role="dialog">
+        <div id="data_pengguna" class="modal custom-modal fade" role="dialog">
                 <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -115,7 +115,7 @@
                             </button>
                         </div>
                         <div class="modal-body">
-                            <form action="{{ route('profile/perbaharui/data-pengguna') }}" method="POST"
+                            <form id="editDataPengguna" action="{{ route('profile/perbaharui/data-pengguna') }}" method="POST"
                                 enctype="multipart/form-data">
                                 @csrf
                                 <div class="row">
@@ -127,14 +127,14 @@
                                                 <div class="form-group">
                                                     <label>Full Name</label>
                                                     <input type="text" class="form-control" id="name" name="name"
-                                                        value="{{ $users->name }}" placeholder="Enter a name" readonly>
+                                                        value="{{ $users->name }}" placeholder="Enter a name">
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
                                                 <div class="form-group">
                                                     <label>E-mail</label>
                                                     <input type="email" class="form-control" id="email" name="email"
-                                                        value="{{ $users->email }}" placeholder="Enter your email" readonly>
+                                                        value="{{ $users->email }}" placeholder="Enter your email">
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
@@ -148,9 +148,11 @@
                                             <div class="col-md-6">
                                                 <div class="form-group">
                                                     <label>Employee ID</label>
-                                                    <input type="text" class="form-control" id="employee_id"
-                                                        name="employee_id" value="{{ $users->employee_id }}"
-                                                        placeholder="Enter your employee id" readonly>
+                                                    @can('admin')
+                                                        <input type="text" class="form-control" id="employee_id" name="employee_id" value="{{ $users->employee_id }}" placeholder="Enter your employee id">
+                                                    @else
+                                                        <input type="text" class="form-control" id="employee_id" name="employee_id" value="{{ $users->employee_id }}" placeholder="Enter your employee id" readonly>
+                                                    @endcan
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
@@ -160,7 +162,7 @@
                                                         <input class="form-control datetimepicker" type="text"
                                                             id="birthDate" name="birthDate" value="{{ $users->tgl_lahir }}"
                                                             placeholder="Enter your date of birth">
-                                                        <small class="text-danger">Example : 10-10-2023</small>
+                                                        <small class="text-danger">Example : 10-10-2024</small>
                                                     </div>
                                                 </div>
                                             </div>
@@ -176,12 +178,12 @@
                         </div>
                     </div>
                 </div>
-            </div> --}}
+            </div>
         <!-- /Update Data Pengguna Modal -->
 
 
         <!-- Hapus Akun Modal -->
-        {{-- <div id="hapus_pengguna" class="modal custom-modal fade" role="dialog">
+        <div id="hapus_pengguna" class="modal custom-modal fade" role="dialog">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-body">
@@ -193,6 +195,9 @@
                             <form action="{{ route('data/pengguna/hapus') }}" method="POST">
                                 @csrf
                                 <input type="hidden" name="id" value="{{ $users->id }}">
+                                <input type="hidden" name="name" value="{{ $users->name }}">
+                                <input type="hidden" name="employee_id" value="{{ $user->employee_id }}">
+                                <input type="hidden" name="role_name" value="{{ $user->role_name }}">
                                 <div class="row">
                                     <div class="col-6">
                                         <button type="submit"
@@ -208,7 +213,7 @@
                     </div>
                 </div>
             </div>
-        </div> --}}
+        </div>
         <!-- /Hapus Akun Modal -->
 
         <!-- Update Foto Profil Modal -->
@@ -222,7 +227,7 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                        <form action="{{ route('profile/perbaharui/foto') }}" method="POST" enctype="multipart/form-data">
+                        <form id="uploadFotoProfile" action="{{ route('profile/perbaharui/foto') }}" method="POST" enctype="multipart/form-data">
                             @csrf
                             <div class="row">
                                 <div class="col-md-12">
@@ -278,7 +283,53 @@
             }
         </script>
         <script>
-            document.getElementById('pageTitle').innerHTML = 'Profile Settings | Loghub - PT TATI';
+            document.getElementById('pageTitle').innerHTML = 'Profile Settings | Loghub - PT TATI ';
+            let activeModal = null; // Variabel global untuk melacak modal aktif
+
+            document.addEventListener('keydown', function (event) {
+                if (event.key === "Escape") {
+                    $('.modal').modal('hide');
+                    activeModal = null; // Reset modal aktif saat Escape ditekan
+                } else if (event.ctrlKey && (event.key === 'p' || event.key === 'P')) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    $('#foto_profile').modal('toggle');
+                    activeModal = 'foto_profile'; // Tandai modal aktif
+                } else if (event.ctrlKey && (event.key === 'e' || event.key === 'E')) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    $('#data_pengguna').modal('toggle');
+                    activeModal = 'data_pengguna'; // Tandai modal aktif
+                } else if (event.ctrlKey && (event.key === 'u' || event.key === 'U')) {
+                    if (activeModal === 'foto_profile') {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        const form = document.getElementById('uploadFotoProfile');
+                        if (form) {
+                            form.submit();
+                        }
+                    } else if (activeModal === 'data_pengguna') {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        const form = document.getElementById('editDataPengguna');
+                        if (form) {
+                            form.submit();
+                        }
+                    } else {
+                        // Jika tidak ada modal aktif, biarkan fungsi default browser berjalan
+                        activeModal = null;
+                    }
+                } else if (event.ctrlKey && (event.key === 'd' || event.key === 'D')) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    $('#hapus_pengguna').modal('toggle');
+                    activeModal = 'hapus_pengguna'; // Tandai modal aktif
+                } else if (event.ctrlKey && (event.key === 's' || event.key === 'S')) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    window.location.href = '{{ route('rubah-kata-sandi') }}';
+                }
+            });
         </script>
     @endpush
 @endsection

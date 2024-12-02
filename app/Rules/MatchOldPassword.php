@@ -26,6 +26,7 @@ class MatchOldPassword implements Rule
      */
     public function message()
     {
-        return 'The :attribute is match with old password.';
+        // return 'The :attribute does not match the old password.';
+        return 'Kata sandi saat ini tidak cocok dengan kata sandi lama.';
     }
 }

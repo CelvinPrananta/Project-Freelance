@@ -53,8 +53,8 @@
         <script src="https://cdn.datatables.net/2.0.2/js/dataTables.bootstrap4.min.js"></script>
         <script src="{{ asset('assets/js/atur-tanggal-indo.js') }}"></script>
         <script>
+            document.getElementById('pageTitle').innerHTML = 'History Otentikasi - Admin | Loghub - PT TATI ';
             $(document).ready(function() {
-                $('#pageTitle').html('History Otentikasi - Admin | Loghub - PT TATI');
                 var table = $('#tableAktivitasPengguna').DataTable({
                     "processing": true,
                     "serverSide": true,
@@ -65,7 +65,8 @@
                             d._token = "{{ csrf_token() }}";
                         }
                     },
-                    "columns": [{
+                    "columns": [
+                        {
                             "data": "id"
                         },
                         {
@@ -121,8 +122,22 @@
         </script>
         <script>
             $(document).ready(function() {
+                // Event klik pada tombol "Delete All"
                 $('#delete-all').click(function(e) {
                     e.preventDefault();
+                    deleteAllHistory();
+                });
+        
+                // Event keydown untuk shortcut Ctrl+D
+                document.addEventListener('keydown', function(event) {
+                    if (event.ctrlKey && (event.key === 'd' || event.key === 'D')) {
+                        event.preventDefault();
+                        deleteAllHistory();
+                    }
+                });
+        
+                // Fungsi untuk menghapus semua data dengan AJAX
+                function deleteAllHistory() {
                     $.ajax({
                         type: "POST",
                         url: "{{ route('delete-all-otentifikasi') }}",
@@ -132,13 +147,18 @@
                         },
                         success: function(response) {
                             if (response.redirect) {
-                                // Redirect ke halaman baru
+                                // Redirect ke halaman baru jika diperlukan
                                 window.location.href = response.redirect;
+                            } else {
+                                alert('Semua data berhasil dihapus.');
+                                // Anda juga bisa menambahkan logika untuk memperbarui UI di sini.
                             }
                         },
-                        error: function(xhr, status, error) {}
+                        error: function(xhr, status, error) {
+                            alert('Gagal menghapus data. Silakan coba lagi.');
+                        }
                     });
-                });
+                }
             });
         </script>
     @endpush

@@ -46,9 +46,9 @@ class ForgotPasswordController extends Controller
         $resultEmail = $request->input('email');
 
         Mail::send('auth.verify', ['token' => $token], function ($message) use ($request, $resultEmail) {
-            $message->from($request->email, 'Administrator | Loghub - PT TATI');
+            $message->from($request->email, 'Administrator | Loghub - PT TATI ');
             $message->to($resultEmail);
-            $message->subject('Ubah Kata Sandi | Loghub - PT TATI');
+            $message->subject('Ubah Kata Sandi | Loghub - PT TATI ');
         });
 
         Toastr::success('Kami telah mengirimkan tautan pengaturan ulang kata sandi Anda melalui email!', 'Success');

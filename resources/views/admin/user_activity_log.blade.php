@@ -33,8 +33,11 @@
                                 <tr>
                                     <th>No</th>
                                     <th>Name</th>
-                                    <th>Card ID</th>
-                                    <th>Type</th>
+                                    <th>E-mail</th>
+                                    <th>Username</th>
+                                    <th>Employee ID</th>
+                                    <th>Status</th>
+                                    <th>Role</th>
                                     <th>Content</th>
                                     <th>Time History</th>
                                 </tr>
@@ -52,8 +55,8 @@
         <script src="https://cdn.datatables.net/2.0.2/js/dataTables.min.js"></script>
         <script src="https://cdn.datatables.net/2.0.2/js/dataTables.bootstrap4.min.js"></script>
         <script>
+            document.getElementById('pageTitle').innerHTML = 'History Activity - Admin | Loghub - PT TATI ';
             $(document).ready(function() {
-                $('#pageTitle').html('History Activity - Admin | Loghub - PT TATI');
                 var table = $('#tableHistoryActivity').DataTable({
                     "processing": true,
                     "serverSide": true,
@@ -64,23 +67,37 @@
                             d._token = "{{ csrf_token() }}";
                         }
                     },
-                    "columns": [{
+                    "columns": [
+                        {
                             "data": "id"
                         },
                         {
-                            "data": "user_id"
+                            "data": "user_name"
                         },
                         {
-                            "data": "card_id"
+                            "data": "email"
                         },
                         {
-                            "data": "type"
+                            "data": "username"
                         },
                         {
-                            "data": "content"
+                            "data": "employee_id"
                         },
                         {
-                            "data": "created_at",
+                            "data": "status"
+                        },
+                        {
+                            "data": "role_name"
+                        },
+                        {
+                            "data": "modify_user"
+                        },
+                        {
+                            "data": "date_time",
+                            "render": function (data, type, row) {
+                                var formattedDateTime = moment(data).locale('id').format('dddd, D MMMM YYYY || hh:mm A');
+                                return '<td>' + formattedDateTime + '</td>';
+                            }
                         },
                     ],
                     "language": {
@@ -116,8 +133,22 @@
     @push('js')
         <script>
             $(document).ready(function() {
+                // Event klik pada tombol "Delete All"
                 $('#delete-all').click(function(e) {
                     e.preventDefault();
+                    deleteAllHistory();
+                });
+        
+                // Event keydown untuk shortcut Ctrl+D
+                document.addEventListener('keydown', function(event) {
+                    if (event.ctrlKey && (event.key === 'd' || event.key === 'D')) {
+                        event.preventDefault();
+                        deleteAllHistory();
+                    }
+                });
+        
+                // Fungsi untuk menghapus semua data dengan AJAX
+                function deleteAllHistory() {
                     $.ajax({
                         type: "POST",
                         url: "{{ route('delete-all-history') }}",
@@ -127,13 +158,18 @@
                         },
                         success: function(response) {
                             if (response.redirect) {
-                                // Redirect ke halaman baru
+                                // Redirect ke halaman baru jika diperlukan
                                 window.location.href = response.redirect;
+                            } else {
+                                alert('Semua data berhasil dihapus.');
+                                // Anda juga bisa menambahkan logika untuk memperbarui UI di sini.
                             }
                         },
-                        error: function(xhr, status, error) {}
+                        error: function(xhr, status, error) {
+                            alert('Gagal menghapus data. Silakan coba lagi.');
+                        }
                     });
-                });
+                }
             });
         </script>
     @endpush

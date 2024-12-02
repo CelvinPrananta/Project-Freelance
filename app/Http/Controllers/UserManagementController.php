@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\DaftarPegawai;
+use App\Models\ModeAplikasi;
 use Illuminate\Http\Request;
 use Brian2694\Toastr\Facades\Toastr;
 use App\Rules\MatchOldPassword;
@@ -24,11 +26,8 @@ class UserManagementController extends Controller
         $result      = DB::table('users')->get();
         $role_name   = DB::table('role_type_users')->get();
         $status_user = DB::table('user_types')->get();
-        return view('admin.user_control', compact(
-            'result',
-            'role_name',
-            'status_user'
-        ));
+        $user = auth()->user();
+        return view('admin.user_control', compact('result', 'role_name', 'status_user','user'));
     }
     // /Tampilan Daftar Pengguna //
 
@@ -166,7 +165,7 @@ class UserManagementController extends Controller
                         </a>
                         <div class="dropdown-menu dropdown-menu-right">
                             <a href="#" class="dropdown-item userUpdate" data-toggle="modal" data-id="' . $record->id . '" data-target="#edit_user">
-                                <i class="fa fa-pencil m-r-5"></i> Details
+                                <i class="fa fa-pencil m-r-5"></i> Edit
                             </a>
                         </div>
                     </div>
@@ -187,10 +186,8 @@ class UserManagementController extends Controller
     // Tampilan Pengguna Log Aktivitas //
     public function tampilanUserLogAktivitas()
     {
-        $activityLog = DB::table('user_activity_logs')->get();
-        return view('admin.user_activity_log', compact(
-            'activityLog'
-        ));
+        $activityUserLog = DB::table('user_activity_logs')->get();
+        return view('admin.user_activity_log', compact('activityUserLog'));
     }
     // /Tampilan Pengguna Log Aktivitas //
 
@@ -198,9 +195,7 @@ class UserManagementController extends Controller
     public function tampilanLogAktivitas()
     {
         $activityLog = DB::table('activity_logs')->get();
-        return view('admin.activity_log', compact(
-            'activityLog',
-        ));
+        return view('admin.activity_log', compact('activityLog'));
     }
     // /Tampilan Log Aktivitas //
 
@@ -213,10 +208,7 @@ class UserManagementController extends Controller
             $users = User::where('user_id', $user_id)->firstOrFail();
         }
         $user = auth()->user();
-        return view('dashboard.profile_user', compact(
-            'users',
-            'user',
-        ));
+        return view('dashboard.profile_user', compact('users','user'));
     }
     // /Tampilan Profile User / Admin //
 
@@ -260,23 +252,28 @@ class UserManagementController extends Controller
     public function perbaharuiFotoProfile(Request $request)
     {
         try {
-            if ($request->has('images')) {
-                $image = $request->file('images');
+            if (!empty($request->images)) {
+
                 $image_name = $request->hidden_image;
-                if ($image_name === 'photo_defaults.jpg' || $image_name !== Auth::user()->avatar) {
-                    if ($image) {
+                $image      = $request->file('images');
+
+                if ($image_name == 'photo_defaults.jpg') {
+                    if ($image != '') {
                         $image_name = rand() . '.' . $image->getClientOriginalExtension();
                         $image->move(public_path('/assets/images/'), $image_name);
-
-                        if (Auth::user()->avatar !== 'photo_defaults.jpg') {
-                            unlink('assets/images/' . Auth::user()->avatar);
-                        }
+                    }
+                } else {
+                    if ($image != '') {
+                        $image_name = rand() . '.' . $image->getClientOriginalExtension();
+                        $image->move(public_path('/assets/images/'), $image_name);
+                        unlink('assets/images/' . Auth::user()->avatar);
                     }
                 }
+
                 $update = [
-                    'user_id' => $request->user_id,
-                    'name' => $request->name,
-                    'avatar' => $image_name,
+                    'user_id'   => $request->user_id,
+                    'name'      => $request->name,
+                    'avatar'    => $image_name,
                 ];
                 User::where('user_id', $request->user_id)->update($update);
             }
@@ -317,17 +314,19 @@ class UserManagementController extends Controller
 
         DB::beginTransaction();
         try {
-            $dt       = Carbon::now();
-            $todayDate = $dt->toDayDateTimeString();
+            $authemployee_id    = $request->resultemployee_id;
+            $authrole           = $request->resultrole;
+            $dt                 = Carbon::now();
+            $todayDate          = $dt->toDayDateTimeString();
 
             $activityLog = [
                 'user_name'    => Session::get('name'),
                 'email'        => Session::get('email'),
                 'username'     => Session::get('username'),
-                'employee_id'  => Session::get('employee_id'),
+                'employee_id'  => $authemployee_id,
                 'status'       => Session::get('status'),
-                'role_name'    => Session::get('role_name'),
-                'modify_user'  => 'Tambah Akun Pengguna',
+                'role_name'    => $authrole,
+                'modify_user'  => 'Tambah Akun ' . $request->name,
                 'date_time'    => $todayDate,
             ];
 
@@ -395,27 +394,33 @@ class UserManagementController extends Controller
             ];
             DB::table('daftar_pegawai')->where('user_id', $request->user_id)->update($updateDaftarPegawai);
 
+            $authname           = $request->resultname;
+            $authemail          = $request->resultemail;
+            $authusername       = $request->resultusername;
+            $authemployee_id    = $request->resultemployee_id;
+            $authstatus         = $request->resultstatus;
+            $authrole_name      = $request->resultrole_name;
             $dt       = Carbon::now();
             $todayDate = $dt->toDayDateTimeString();
 
             $activityLog = [
-                'user_name'     => $name,
-                'email'         => $email,
-                'username'      => $username,
-                'employee_id'   => $employee_id,
-                'status'        => $status,
-                'role_name'     => $role_name,
-                'modify_user'   => 'Perbaharui Akun Pengguna',
+                'user_name'     => $authname,
+                'email'         => $authemail,
+                'username'      => $authusername,
+                'employee_id'   => $authemployee_id,
+                'status'        => $authstatus,
+                'role_name'     => $authrole_name,
+                'modify_user'  => 'Perbaharui Akun ' . $request->name,
                 'date_time'     => $todayDate,
             ];
             DB::table('user_activity_logs')->insert($activityLog);
 
             DB::commit();
-            Toastr::success('Akun pengguna berhasil diperbaharui', 'Success');
+            Toastr::success('Berhasil diperbaharui akun pengguna', 'Success');
             return redirect()->route('manajemen-pengguna');
         } catch (\Exception $e) {
             DB::rollback();
-            Toastr::error('Akun pengguna gagal diperbaharui', 'Error');
+            Toastr::error('Gagal diperbaharui akun pengguna', 'Error');
             return redirect()->back();
         }
     }
@@ -426,26 +431,42 @@ class UserManagementController extends Controller
     {
         DB::beginTransaction();
         try {
-
-            $dt        = Carbon::now();
-            $todayDate = $dt->toDayDateTimeString();
+            $authEmployeeId = $request->employee_id;
+            $resultName     = $request->name;
+            $authRole       = $request->role_name;
+            $dt             = Carbon::now();
+            $todayDate      = $dt->toDayDateTimeString();
+            $authUserId     = Auth::id();
 
             $activityLog = [
                 'user_name'    => Session::get('name'),
                 'email'        => Session::get('email'),
-                'employee_id'  => Session::get('employee_id'),
+                'username'     => Session::get('username'),
+                'employee_id'  => $authEmployeeId,
                 'status'       => Session::get('status'),
-                'role_name'    => Session::get('role_name'),
-                'modify_user'  => 'Hapus Akun Pengguna',
+                'role_name'    => $authRole,
+                'modify_user'  => 'Hapus Akun ' . $resultName,
                 'date_time'    => $todayDate,
             ];
 
             DB::table('user_activity_logs')->insert($activityLog);
+
+            // Hapus data pengguna
             User::find($request->id)->delete();
-            Auth::logout();
-            DB::commit();
-            Toastr::success('Akun pengguna berhasil dihapus', 'Success');
-            return redirect()->route("login");
+            ModeAplikasi::find($request->id)->delete();
+            DaftarPegawai::find($request->id)->delete();
+
+            // Cek apakah akun yang dihapus adalah akun sendiri
+            if ($request->id == $authUserId) {
+                Auth::logout();
+                DB::commit();
+                Toastr::success('Akun anda berhasil dihapus', 'Success');
+                return redirect()->route("login");
+            } else {
+                DB::commit();
+                Toastr::success('Akun pengguna berhasil dihapus', 'Success');
+                return redirect()->route("manajemen-pengguna");
+            }
         } catch (\Exception $e) {
             DB::rollback();
             Toastr::error('Akun pengguna gagal dihapus', 'Error');
@@ -465,23 +486,40 @@ class UserManagementController extends Controller
     public function perbaharuiKataSandi(Request $request)
     {
         $request->validate([
-            'current_password'      => ['required', new MatchOldPassword],
-            'new_password'          => ['required'],
-            'new_confirm_password'  => ['same:new_password'],
+            'current_password'      => ['required', 'string', 'min:8', new MatchOldPassword],
+            'new_password'          => ['required', 'string', 'min:8'],
+            'new_confirm_password'  => ['required', 'string', 'same:new_password', 'min:8'],
+        ],
+        [
+            'current_password.required' => 'Bidang kata sandi lama wajib diisi.',
+            'current_password.min' => 'Kata sandi lama harus minimal 8 karakter.',
+            'new_password.required' => 'Bidang kata sandi baru wajib diisi.',
+            'new_password.min' => 'Kata sandi baru harus minimal 8 karakter.',
+            'new_confirm_password.required' => 'Bidang konfirmasi kata sandi baru wajib diisi.',
+            'new_confirm_password.min' => 'Konfirmasi kata sandi baru harus minimal 8 karakter.',
+            'new_confirm_password.same' => 'Kata sandi dan konfirmasi kata sandi baru tidak sesuai.',
         ]);
 
         DB::beginTransaction();
         try {
+            // Perbarui kata sandi
+            $user = User::find(auth()->user()->id);
+            $user->update(['password' => Hash::make($request->new_password)]);
 
-            User::find(auth()->user()->id)->update(['password' => Hash::make($request->new_password)]);
-
+            // Tetap pertahankan sesi pengguna
+            $request->session()->put('password_hash', $user->password);
+            auth()->logoutOtherDevices($request->new_password);
+            
             DB::commit();
+
+            // Berikan notifikasi sukses
             Toastr::success('Kata sandi berhasil diperbaharui', 'Success');
-            return redirect()->back();
+            return redirect()->route("profile");
         } catch (\Exception $e) {
             DB::rollBack();
+            // Berikan notifikasi error
             Toastr::error('Kata sandi gagal diperbaharui', 'Error');
-            return redirect()->back();
+            return redirect()->back()->withErrors(['error' => $e->getMessage()]);
         }
     }
     // /Perbaharui Kata Sandi //
@@ -491,64 +529,68 @@ class UserManagementController extends Controller
     {
         $columns = array(
             0 => 'id',
-            1 => 'user_id',
-            2 => 'card_id',
-            3 => 'type',
-            4 => 'content',
-            5 => 'created_at'
+            1 => 'user_name',
+            2 => 'email',
+            3 => 'username',
+            4 => 'employee_id',
+            5 => 'status',
+            6 => 'role_name',
+            7 => 'modify_user',
+            8 => 'date_time',
         );
 
-        $historyActivity = DB::table('card_histories')
-            ->leftjoin('users', 'card_histories.user_id', '=', 'users.id')
-            ->select('card_histories.*', 'users.name as result_name');
-        $totalData = $historyActivity->count();
+        $totalData = userActivityLog::count();
+
+        $totalFiltered = $totalData;
+
         $limit = $request->length;
         $start = $request->start;
         $order = $columns[$request->input('order.0.column')];
         $dir = $request->input('order.0.dir');
+
         $search = $request->input('search.value');
+        $counter = $start + 1;
 
-        $query = DB::table('card_histories')
-            ->leftjoin('users', 'card_histories.user_id', '=', 'users.id')
-            ->select('card_histories.*', 'users.name as result_name')
-            ->offset($start)
-            ->limit($limit)
-            ->orderBy($order, $dir);
-
-        if (!empty($search)) {
-            $query->where(function ($query) use ($search) {
-                $query->where('users.name', 'like', "%{$search}%");
-            });
-            $totalData = $query->count();
+        if (empty($search)) {
+            $activityLog = userActivityLog::offset($start)
+                ->limit($limit)
+                ->orderBy($order, $dir)
+                ->get();
         } else {
-            $totalData = $query->count();
+            $activityLog =  userActivityLog::where('user_name', 'like', "%{$search}%")
+                ->offset($start)
+                ->limit($limit)
+                ->orderBy($order, $dir)
+                ->get();
+
+            $totalFiltered = userActivityLog::where('user_name', 'like', "%{$search}%")
+                ->count();
         }
 
-        $historyActivity = $query->get();
-
-        $data_arr = [];
-        if (!empty($historyActivity)) {
-            foreach ($historyActivity as $key => $item) {
-                $formattedDate = Carbon::parse($item->created_at)->translatedFormat('l, j F Y || h:i A');
-                $data_arr[] = [
-                    "id"            => '<span class="id" data-id="' . $item->id . '">' . ($start + ($key + 1)) . '</span>',
-                    "user_id"       => '<span class="user_id">' . $item->result_name . '</span>',
-                    "card_id"       => '<span class="card_id">' . $item->card_id . '</span>',
-                    "type"          => '<span class="type">' . $item->type . '</span>',
-                    "content"       => '<span class="content">' . $item->content . '</span>',
-                    "created_at"    => '<span class="created_at">' . $formattedDate . '</span>',
-                ];
+        $data = array();
+        if (!empty($activityLog)) {
+            foreach ($activityLog as $key => $item) {
+                $nestedData['id'] = $counter++;
+                $nestedData['user_name'] = $item->user_name;
+                $nestedData['email'] = $item->email;
+                $nestedData['username'] = $item->username;
+                $nestedData['employee_id'] = $item->employee_id;
+                $nestedData['status'] = $item->status;
+                $nestedData['role_name'] = $item->role_name;
+                $nestedData['modify_user'] = $item->modify_user;
+                $nestedData['date_time'] = $item->date_time;
+                $data[] = $nestedData;
             }
         }
 
-        $response = array(
+        $json_data = array(
             "draw"            => intval($request->input('draw')),
             "recordsTotal"    => intval($totalData),
-            "recordsFiltered" => intval($totalData),
-            "data"            => $data_arr
+            "recordsFiltered" => intval($totalFiltered),
+            "data"            => $data
         );
 
-        return response()->json($response);
+        return response()->json($json_data);
     }
     // /Proses Data Riwayat Aktivitas //
 
@@ -613,8 +655,8 @@ class UserManagementController extends Controller
 
     public function deleteHistoryActivity(Request $request)
     {
-        CardHistory::truncate();
-        session()->flash('success', 'Histori Dihapus');
+        userActivityLog::truncate();
+        session()->flash('success', 'Berhasil menghapus histori aktivitas');
         return response()->json([
             'redirect' =>  route('riwayat-aktivitas'),
         ]);
@@ -623,7 +665,7 @@ class UserManagementController extends Controller
     public function deleteHistoryOtentifikasi(Request $request)
     {
         activityLog::truncate();
-        session()->flash('success', 'Histori Dihapus');
+        session()->flash('success', 'Berhasil menghapus histori otentikasi');
         return response()->json([
             'redirect' =>  route('riwayat-aktivitas-otentikasi'),
         ]);

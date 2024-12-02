@@ -13,8 +13,17 @@
                         <form method="POST" action="{{ route('daftar') }}">
                             @csrf
                             <div class="form-group">
-                                <label>Username</label>
-                                <input type="text" class="form-control @error('username') is-invalid @enderror" name="username" value="{{ old('username') }}" placeholder="Masukkan Username">
+                                <label>Nama Lengkap</label>
+                                <input type="text" class="form-control @error('name') is-invalid @enderror" name="name" value="{{ old('name') }}" placeholder="Masukkan Nama Lengkap">
+                                @error('name')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
+                            </div>
+                            <div class="form-group">
+                                <label>Nama Pengguna</label>
+                                <input type="text" class="form-control @error('username') is-invalid @enderror" name="username" value="{{ old('username') }}" placeholder="Masukkan Nama Pengguna">
                                 @error('username')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
@@ -81,13 +90,13 @@
                             <div class="form-group">
                                 <label>Konfirmasi Kata Sandi</label>
                                 <div class="input-group">
-                                    <input type="password" class="form-control @error('password') is-invalid @enderror" id="passwordInput2" name="password_confirmation" placeholder="Masukkan Konfirmasi Kata Sandi">
+                                    <input type="password" class="form-control @error('password_confirmation') is-invalid @enderror" id="passwordInput2" name="password_confirmation" placeholder="Masukkan Konfirmasi Kata Sandi">
                                     <div class="input-group-append">
                                         <button type="button" id="tampilkanPassword2" class="btn btn-outline-secondary">
                                             <i id="icon2" class="fa fa-eye-slash"></i>
                                         </button>
                                     </div>
-                                    @error('password')
+                                    @error('password_confirmation')
                                         <span class="invalid-feedback" role="alert">
                                             <strong>{{ $message }}</strong>
                                         </span>
@@ -119,19 +128,11 @@
     </div>
 
     @section('script')
+        <script>
+            history.pushState({}, "", '/register');
+        </script>
         <script src="https://kit.fontawesome.com/95e99ea6db.js" crossorigin="anonymous"></script>
-
         <script src="{{ asset('assets/js/lihatkatasandi.js') }}"></script>
-
-        <script src="{{ asset('assets/js/indicatorkatasandi.js') }}"></script>
-
-        <script>
-            document.getElementById('pageTitle').innerHTML = 'Daftar Aplikasi | Loghub - PT TATI';
-        </script>
-
-        <script>
-            history.pushState({}, "", '/daftar');
-        </script>
-    
+        <script src="{{ asset('assets/js/indicatorkatasandiregister.js') }}"></script>
     @endsection
 @endsection

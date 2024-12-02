@@ -65,7 +65,7 @@
     @push('js')
         <script src="{{ asset('assets/js/slide-card.js') }}"></script>
         <script>
-            $('#pageTitle').html('Home | Loghub - PT TATI');
+            $('#pageTitle').html('Home | Loghub - PT TATI ');
         </script>
     @endpush
 @endsection

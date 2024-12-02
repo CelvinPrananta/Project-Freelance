@@ -1466,7 +1466,7 @@ table.dataTable thead > tr > td.sorting {
 .main-drop .user-img img {
 	border-radius: 50%;
     width: 45px;
-	height: auto;
+	height: 45px;
 }
 .user-img .status {
 	border: 2px solid #fff;
@@ -15593,7 +15593,8 @@ ul.nav-tabs > li > a {
 .sidebar-menu li.active-home a:hover,
 .sidebar-menu li.active-manajemen-pengguna a:hover,
 .sidebar-menu li.active-riwayat-aktivitas a:hover,
-.sidebar-menu li.active-profile a:hover {
+.sidebar-menu li.active-profile a:hover,
+.sidebar-menu li.active-data-satuan a:hover {
 	color: rgba(0, 0, 0, 1) !important;
 }
 

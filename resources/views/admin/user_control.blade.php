@@ -41,6 +41,9 @@
                             <li class="breadcrumb-item active">User</li>
                         </ul>
                     </div>
+                    <div class="col-auto float-right ml-auto">
+                        <a href="#" class="btn add-btn" data-toggle="modal" data-target="#add_user"><i class="fa fa-plus"></i> Add User</a>
+                    </div>
                 </div>
             </div>
             <!-- /Page Header -->
@@ -92,15 +95,15 @@
                             <thead>
                                 <tr>
                                     <th>No</th>
-                                    <th>Nama Pengguna</th>
-                                    <th>ID Pengguna</th>
+                                    <th>Full Name</th>
+                                    <th>User ID</th>
                                     <th>E-mail</th>
                                     <th>Username</th>
-                                    <th>ID Employee</th>
-                                    <th>Tanggal Bergabung</th>
-                                    <th>Peran</th>
+                                    <th>Employee ID</th>
+                                    <th>Join Date</th>
+                                    <th>Role</th>
                                     <th>Status</th>
-                                    <th>Aksi</th>
+                                    <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody></tbody>
@@ -111,33 +114,178 @@
         </div>
         <!-- /Page Content -->
 
+        <!-- Add Daftar Pengguna Modal -->
+        <div id="add_user" class="modal custom-modal fade" role="dialog">
+            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Tambah Pengguna</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="addNewUsersForm" action="{{ route('data/pengguna/tambah-data') }}" method="POST" enctype="multipart/form-data">
+                            @csrf
+                            <input type="hidden" name="resultemployee_id" value="{{ $user->employee_id }}">
+                            <input type="hidden" name="resultrole" value="{{ $user->role_name }}">
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label>Nama Lengkap</label>
+                                        <input class="form-control @error('name') is-invalid @enderror" type="text" id="" name="name" value="{{ old('name') }}" placeholder="Masukkan Nama Lengkap">
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <label>Alamat E-mail </label>
+                                    <input class="form-control" type="email" id="" name="email" value="{{ old('email') }}" placeholder="Masukkan E-mail">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label>Username</label>
+                                        <input class="form-control" type="text" id="" name="username" value="{{ old('username') }}" placeholder="Masukkan Username" />
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label>ID Employee</label>
+                                        <input class="form-control" type="text" id="" name="employee_id" value="{{ old('employee_id') }}" placeholder="Masukkan ID Employee">
+                                    </div>
+                                </div>
+                                <input type="hidden" class="form-control" id="image" name="image" value="photo_defaults.jpg">
+                                <input type="hidden" class="form-control" id="" name="tema_aplikasi" value="Terang">
+                                <input type="hidden" class="form-control" id="" name="status_online" value="Offline">
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <label>Peran</label><br>
+                                    <select class="select" name="role_name" id="role_name">
+                                        <option selected disabled>-- Pilih Peran --</option>
+                                        @foreach ($role_name as $role )
+                                        <option value="{{ $role->role_type }}">{{ $role->role_type }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="col-sm-6">
+                                    <label>Status</label>
+                                    <select class="select" name="status" id="status">
+                                        <option selected disabled>-- Pilih Status --</option>
+                                        @foreach ($status_user as $status)
+                                        <option value="{{ $status->type_name }}">{{ $status->type_name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            <br>
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <div class="info-status">
+                                        <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="info-circle" class="svg-inline--fa fa-info-circle fa-w-16 float-right h-100" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style="width: 1em; margin-top: 4px;">
+                                            <path fill="currentColor" d="M256 8C119.043 8 8 119.083 8 256c0 136.997 111.043 248 248 248s248-111.003 248-248C504 119.083 392.957 8 256 8zm0 110c23.196 0 42 18.804 42 42s-18.804 42-42 42-42-18.804-42-42 18.804-42 42-42zm56 254c0 6.627-5.373 12-12 12h-88c-6.627 0-12-5.373-12-12v-24c0-6.627 5.373-12 12-12h12v-64h-12c-6.627 0-12-5.373-12-12v-24c0-6.627 5.373-12 12-12h64c6.627 0 12 5.373 12 12v100h12c6.627 0 12 5.373 12 12v24z"></path>
+                                        </svg>
+                                        <span class="text-status"><b>Indikator Kata Sandi :</b><br>
+                                            <i class="fa-solid fa-circle" style="font-size: 5px"></i> Sandi Lemah : [a-z]<br>
+                                            <i class="fa-solid fa-circle" style="font-size: 5px"></i> Sandi Sedang : [a-z] + [angka]<br>
+                                            <i class="fa-solid fa-circle" style="font-size: 5px"></i> Sandi Kuat : [a-z] + [angka] + [!,@,#,$,%,^,&,*,?,_,~,(,)]
+                                        </span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Kata Sandi</label>
+                                        <div class="input-group">
+                                            <input type="password" class="form-control" name="password"  id="passwordInput1" placeholder="Masukkan Kata Sandi">
+                                            <div class="input-group-append" style="position: sticky">
+                                                <button type="button" id="tampilkanPassword1" class="btn btn-outline-secondary">
+                                                    <i id="icon1" class="fa fa-eye-slash"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="kekuatan-indicator">
+                                            <div class="kata-sandi-lemah-after-1"></div>
+                                            <div class="kata-sandi-sedang-after-1"></div>
+                                            <div id="indicator-kata-sandi-1"></div>
+                                            <div class="kata-sandi-lemah-before-1"></div>
+                                            <div class="kata-sandi-sedang-before-1"></div>
+                                        </div>
+                                        <div id="indicator-kata-sandi-tulisan-1"></div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="info-status">
+                                        <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="info-circle" class="svg-inline--fa fa-info-circle fa-w-16 float-right h-100" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style="width: 1em; margin-top: 4px;">
+                                            <path fill="currentColor" d="M256 8C119.043 8 8 119.083 8 256c0 136.997 111.043 248 248 248s248-111.003 248-248C504 119.083 392.957 8 256 8zm0 110c23.196 0 42 18.804 42 42s-18.804 42-42 42-42-18.804-42-42 18.804-42 42-42zm56 254c0 6.627-5.373 12-12 12h-88c-6.627 0-12-5.373-12-12v-24c0-6.627 5.373-12 12-12h12v-64h-12c-6.627 0-12-5.373-12-12v-24c0-6.627 5.373-12 12-12h64c6.627 0 12 5.373 12 12v100h12c6.627 0 12 5.373 12 12v24z"></path>
+                                        </svg>
+                                        <span class="text-status"><b>Indikator Kata Sandi :</b><br>
+                                            <i class="fa-solid fa-circle" style="font-size: 5px"></i> Sandi Lemah : [a-z]<br>
+                                            <i class="fa-solid fa-circle" style="font-size: 5px"></i> Sandi Sedang : [a-z] + [angka]<br>
+                                            <i class="fa-solid fa-circle" style="font-size: 5px"></i> Sandi Kuat : [a-z] + [angka] + [!,@,#,$,%,^,&,*,?,_,~,(,)]
+                                        </span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Konfirmasi Kata Sandi</label>
+                                        <div class="input-group">
+                                            <input type="password" class="form-control" name="password_confirmation" id="passwordInput2" placeholder="Masukkan Konfirmasi Kata Sandi">
+                                            <div class="input-group-append">
+                                                <button type="button" id="tampilkanPassword2" class="btn btn-outline-secondary">
+                                                    <i id="icon2" class="fa fa-eye-slash"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="kekuatan-indicator">
+                                            <div class="kata-sandi-lemah-after-2"></div>
+                                            <div class="kata-sandi-sedang-after-2"></div>
+                                            <div id="indicator-kata-sandi-2"></div>
+                                            <div class="kata-sandi-lemah-before-2"></div>
+                                            <div class="kata-sandi-sedang-before-2"></div>
+                                        </div>
+                                        <div id="indicator-kata-sandi-tulisan-2"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="submit-section">
+                                <button type="submit" class="btn btn-primary submit-btn">Simpan</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /Add Daftar Pengguna Modal -->
+
         <!-- Edit Daftar Pengguna Modal -->
         <div id="edit_user" class="modal custom-modal fade" role="dialog">
             <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">Details</h5>
+                        <h5 class="modal-title">Edit User</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
                     <br>
                     <div class="modal-body">
-                        <form action="{{ route('data/pengguna/perbaharui') }}" method="POST" enctype="multipart/form-data">
+                        <form id="editUsersForm" action="{{ route('data/pengguna/perbaharui') }}" method="POST" enctype="multipart/form-data">
                             @csrf
                             <input type="hidden" name="user_id" id="e_id" value="">
+                            <input type="hidden" name="resultname" value="{{ $user->name }}">
+                            <input type="hidden" name="resultemail" value="{{ $user->email }}">
+                            <input type="hidden" name="resultusername" value="{{ $user->username }}">
+                            <input type="hidden" name="resultemployee_id" value="{{ $user->employee_id }}">
+                            <input type="hidden" name="resultstatus" value="{{ $user->status }}">
+                            <input type="hidden" name="resultrole_name" value="{{ $user->role_name }}">
                             <div class="row">
                                 <div class="col-sm-6">
                                     <div class="form-group">
                                         <label>Full Name</label>
                                         <input class="form-control" type="text" name="name" id="e_name"
-                                            value="" readonly placeholder="Enter full name" />
+                                            value="" placeholder="Enter full name" />
                                     </div>
                                 </div>
                                 <div class="col-sm-6">
                                     <label>E-mail Address</label>
                                     <input class="form-control" type="email" name="email" id="e_email" value=""
-                                        readonly placeholder="Enter e-mail" />
+                                        placeholder="Enter e-mail" />
                                 </div>
                             </div>
                             <div class="row">
@@ -145,25 +293,25 @@
                                     <div class="form-group">
                                         <label>Username</label>
                                         <input class="form-control" type="text" id="e_username" name="username"
-                                            value="" readonly placeholder="Enter username" />
+                                            value="" placeholder="Enter username" />
                                     </div>
                                 </div>
                                 <div class="col-sm-6">
                                     <div class="form-group">
                                         <label>Employee ID</label>
                                         <input class="form-control" type="text" id="e_employee_id" name="employee_id"
-                                            value="" readonly placeholder="Enter employee id" />
+                                            value="" placeholder="Enter employee id" />
                                     </div>
                                 </div>
                                 <input type="hidden" class="form-control" id="image" name="images"
-                                    value="photo_defaults.jpg">
+                                    value="{{ $user->avatar ?? 'photo_defaults.jpg' }}">
                             </div>
                             <div class="row">
                                 <div class="col-sm-6">
                                     <label>Role </label>
                                     <select class="select" name="role_name" id="e_role_name">
                                         @foreach ($role_name as $role)
-                                            <option value="{{ $role->role_type }}" disabled>{{ $role->role_type }}</option>
+                                            <option value="{{ $role->role_type }}">{{ $role->role_type }}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -171,11 +319,15 @@
                                     <label>Status</label>
                                     <select class="select" name="status" id="e_status">
                                         @foreach ($status_user as $status)
-                                            <option value="{{ $status->type_name }}" disabled>{{ $status->type_name }}
+                                            <option value="{{ $status->type_name }}">{{ $status->type_name }}
                                             </option>
                                         @endforeach
                                     </select>
                                 </div>
+                            </div>
+                            <br>
+                            <div class="submit-section">
+                                <button type="submit" class="btn btn-primary submit-btn">Update</button>
                             </div>
                         </form>
                     </div>
@@ -192,8 +344,8 @@
         <script src="https://cdn.datatables.net/2.0.2/js/dataTables.min.js"></script>
         <script src="https://cdn.datatables.net/2.0.2/js/dataTables.bootstrap4.min.js"></script>
         <script>
+            document.getElementById('pageTitle').innerHTML = 'User Management - Admin | Loghub - PT TATI ';
             $(document).ready(function() {
-                $('#pageTitle').html('User Management - Admin | Loghub - PT TATI');
                 $(document).on('click', '.userUpdate', function() {
                     var _this = $(this).parents('tr');
                     $('#e_id').val(_this.find('.user_id').text());
@@ -302,6 +454,40 @@
                     table.draw();
                 });
             });
+
+            document.addEventListener('keydown', function (event) {
+                if (event.key === "Escape") {
+                    $('.modal').modal('hide');
+                } else if (event.ctrlKey && (event.key === 'a' || event.key === 'A')) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    $('#add_user').modal('toggle');
+                } else if (event.ctrlKey && (event.key === 's' || event.key === 'S')) {
+                    const addUserModal = document.getElementById('add_user');
+                    if (addUserModal && addUserModal.classList.contains('show')) {
+                        event.preventDefault();
+                        event.stopPropagation();
+
+                        const form = document.getElementById('addNewUsersForm');
+                        if (form) {
+                            form.submit();
+                        }
+                    }
+                } else if (event.ctrlKey && (event.key === 'u' || event.key === 'U')) {
+                    const editUserModal = document.getElementById('edit_user');
+                    if (editUserModal && editUserModal.classList.contains('show')) {
+                        event.preventDefault();
+                        event.stopPropagation();
+
+                        const form = document.getElementById('editUsersForm');
+                        if (form) {
+                            form.submit();
+                        }
+                    }
+                }
+            });
         </script>
+        <script src="{{ asset('assets/js/lihatkatasandi.js') }}"></script>
+        <script src="{{ asset('assets/js/indicatorkatasandiuser.js') }}"></script>
     @endpush
 @endsection

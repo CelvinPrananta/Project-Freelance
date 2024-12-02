@@ -8,7 +8,7 @@
 		<meta name="keywords" content="admin, estimates, bootstrap, business, corporate, creative, management, minimal, modern, accounts, invoice, html5, responsive, CRM, Projects">
         <meta name="author" content="PT TATI">
         <meta name="robots" content="noindex, nofollow">
-        <title id="pageTitle">Login | Loghub - PT TATI </title>
+        <title id="pageTitle">{{ $pageTitle ?? $pageTitle2 ?? ($pageTitle3 ?? 'Loghub - PT TATI ') }}</title>
         <script src="{{ asset('assets/js/title-move.js') }}"></script>
         
 		<!-- Favicon -->
