@@ -7,7 +7,7 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\UserManagementController;
-use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\DataSatuanController;
 use App\Http\Controllers\NotificationController;
 
 // ----------------------------- Menu Sidebar Aktif ----------------------------- //
@@ -93,13 +93,13 @@ Route::controller(UserManagementController::class)->middleware(['auth', 'auth.se
     Route::get('get-aktivitas-pengguna', 'getAktivitasPengguna')->name('get-aktivitas-pengguna');
 });
 
-Route::controller(EmployeeController::class)->middleware(['auth', 'auth.session'])->group(function () {
-    Route::get('data/satuan', 'index')->name('data-satuan');
+Route::controller(DataSatuanController::class)->group(function () {
+    Route::get('data/satuan', 'index')->middleware('auth')->name('data-satuan');
     Route::get('get-data-satuan', 'getDataSatuan')->name('get-data-satuan');
-    Route::post('data/satuan/tambah-data', 'addDataSatuan')->name('data/satuan/tambah-data');
-    Route::post('data/satuan/edit-data', 'editDataSatuan')->name('data/satuan/edit-data');
-    Route::post('data/satuan/hapus-data', 'deleteDataSatuan')->name('data/satuan/hapus-data');
-    Route::get('data/satuan/cari', 'searchDataSatuan')->name('data/satuan/cari');
+    Route::post('data/satuan/tambah-data', 'addDataSatuan')->middleware('auth')->name('data/satuan/tambah-data');
+    Route::post('data/satuan/edit-data', 'updateDataSatuan')->middleware('auth')->name('data/satuan/edit-data');
+    Route::post('data/satuan/hapus-data', 'deleteDataSatuan')->middleware('auth')->name('data/satuan/hapus-data');
+    Route::get('data/satuan/cari', 'searchDataSatuan')->middleware('auth')->name('data/satuan/cari');
 });
 
 // ----------------------------- Notifikasi ----------------------------- //
