@@ -9,6 +9,7 @@ use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\UserManagementController;
 use App\Http\Controllers\DataSatuanController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\UjianSoalController;
 
 // ----------------------------- Menu Sidebar Aktif ----------------------------- //
 function set_active($route)
@@ -22,11 +23,11 @@ function set_active($route)
 // ----------------------------- Autentikfikasi Login ----------------------------- //
 Route::get('/', function () {
     return view('auth.landing');
-});
+})->name('landing');
 
 Route::get('/login', function () {
     return view('auth.login');
-});
+})->name('login');
 
 // ----------------------------- Autentikfikasi MultiLevel ----------------------------- //
 Route::group(['middleware' => 'auth'], function () {
@@ -48,7 +49,6 @@ Route::controller(HomeController::class)->middleware(['auth', 'auth.session'])->
 
 // ----------------------------- Masuk Aplikasi ----------------------------- //
 Route::controller(LoginController::class)->group(function () {
-    Route::get('/', 'landing')->name('landing');
     Route::get('/login', 'login')->name('login');
     Route::post('/login', 'authenticate');
     Route::get('/logout', 'logout')->name('logout');

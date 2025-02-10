@@ -503,14 +503,11 @@ class UserManagementController extends Controller
         DB::beginTransaction();
         try {
             // Perbarui kata sandi
-            $user = User::find(auth()->user()->id);
-            $user->update(['password' => Hash::make($request->new_password)]);
+            User::find(auth()->user()->id)->update(['password' => Hash::make($request->new_password)]);
+            DB::commit();
 
             // Tetap pertahankan sesi pengguna
-            $request->session()->put('password_hash', $user->password);
-            auth()->logoutOtherDevices($request->new_password);
-            
-            DB::commit();
+            auth()->loginUsingId(auth()->user()->id);
 
             // Berikan notifikasi sukses
             Toastr::success('Kata sandi berhasil diperbaharui', 'Success');

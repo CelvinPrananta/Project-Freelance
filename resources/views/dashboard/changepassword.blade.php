@@ -40,9 +40,7 @@
                             </div>
                             <label>Old Password</label>
                             <div class="input-group">
-                                <input type="password" class="form-control @error('current_password') is-invalid @enderror"
-                                    id="passwordInput1" name="current_password" value="{{ old('current_password') }}"
-                                    placeholder="Enter the old password">
+                                <input type="password" class="form-control @error('current_password') is-invalid @enderror" id="passwordInput1" name="current_password" value="{{ old('current_password') }}" placeholder="Enter the old password">
                                 <div class="input-group-append" style="position: sticky">
                                     <button type="button" id="tampilkanPassword1" class="btn btn-outline-secondary">
                                         <i id="icon1" class="fa fa-eye-slash"></i>
@@ -75,8 +73,7 @@
                             </div>
                             <label>New Password</label>
                             <div class="input-group">
-                                <input type="password" class="form-control @error('new_password') is-invalid @enderror"
-                                    id="passwordInput2" name="new_password" placeholder="Enter a new password">
+                                <input type="password" class="form-control @error('new_password') is-invalid @enderror" id="passwordInput2" name="new_password" placeholder="Enter a new password">
                                 <div class="input-group-append" style="position: sticky">
                                     <button type="button" id="tampilkanPassword2" class="btn btn-outline-secondary">
                                         <i id="icon2" class="fa fa-eye-slash"></i>
@@ -117,10 +114,7 @@
                             </div>
                             <label>Confirm Password</label>
                             <div class="input-group">
-                                <input type="password"
-                                    class="form-control @error('new_confirm_password') is-invalid @enderror"
-                                    id="passwordInput3" name="new_confirm_password"
-                                    placeholder="Confirm the new password">
+                                <input type="password" class="form-control @error('new_confirm_password') is-invalid @enderror" id="passwordInput3" name="new_confirm_password" placeholder="Confirm the new password">
                                 <div class="input-group-append">
                                     <button type="button" id="tampilkanPassword3" class="btn btn-outline-secondary">
                                         <i id="icon3" class="fa fa-eye-slash"></i>
